@@ -1,6 +1,6 @@
 {
   "name": "omega2-gpio",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "GPIO control from Node via fast-gpio",
   "main": "omega2-gpio.js",
   "repository": {

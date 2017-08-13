@@ -1,5 +1,5 @@
 'use strict';
-const Omega2GPIO = require('./omega2-gpio.js'),
+const Omega2GPIO = require('omega2-gpio'),
   gpio = new Omega2GPIO();
 
 // Output pins (digital)
