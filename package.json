@@ -1,0 +1,24 @@
+{
+  "name": "omega2-gpio",
+  "version": "1.0.0",
+  "description": "GPIO control from Node via fast-gpio",
+  "main": "omega2-gpio.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/entozoon/omega2-gpio.git"
+  },
+  "author": "michaelcook.tech",
+  "license": "ISC",
+  "dependencies": {
+    "child-process-promise": "^2.2.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-eslint": "^7.2.3",
+    "babel-preset-es2015": "^6.24.1",
+    "eslint": "^4.2.0"
+  },
+  "scripts": {
+    "test": "node test.js"
+  }
+}
