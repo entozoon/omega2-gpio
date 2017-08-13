@@ -34,8 +34,19 @@ inputA.getPromised().then(value => {
 // Simple blink (say, if you have an LED connected to gpio pin 11)
 let ledPin = gpio.pin(11),
   blink = true;
-setInterval(() => {
+let blinkInterval = setInterval(() => {
   console.log((blink ? '^_^' : '-_-') + '\n');
   ledPin.set(blink);
   blink = !blink;
 }, 500);
+
+// Stop blinking after a while
+setTimeout(() => {
+  clearInterval(blinkInterval);
+
+  // PWM output
+  ledPin.pwm({
+    frequency: 5, // hz
+    duty: 75 // percentage (0 -> 100)
+  });
+}, 4000);

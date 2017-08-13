@@ -60,6 +60,16 @@ class Omega2GpioPin {
     // "> Read GPIO13: 1" -> 1
     return parseInt(data.slice(data.indexOf(':') + 2).trim());
   }
+
+  pwm(options) {
+    // Set value locally for the instance
+    this.value = null;
+    this.frequency = options.frequency ? options.frequency : 'frequency';
+    this.duty = options.duty ? options.duty : 'duty';
+
+    // Set value physically
+    spawn('fast-gpio', ['pwm', this.pin, this.frequency, this.duty]);
+  }
 }
 
 class Omega2Gpio {
