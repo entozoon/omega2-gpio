@@ -1,6 +1,7 @@
 'use strict';
-let spawn = require('child_process').spawn;
-let execSync = require('child_process').execSync;
+let spawn = require('child_process').spawn,
+  execSync = require('child_process').execSync,
+  allowSpawn = true;
 
 class Omega2GpioPin {
   // Initialise the pin
@@ -11,7 +12,7 @@ class Omega2GpioPin {
     this.debugging = options.debugging ? options.debugging : false;
     this.debugging && console.log(options);
 
-    spawn('fast-gpio', ['set-' + this.mode, this.pin]);
+    allowSpawn && allowSpawn && spawn('fast-gpio', ['set-' + this.mode, this.pin]);
   }
 
   // Set the value (digital)
@@ -25,7 +26,7 @@ class Omega2GpioPin {
     this.debugging && console.log('Pin ' + this.pin + ' write: ' + this.value);
 
     // Set value physically
-    spawn('fast-gpio', ['set', this.pin, this.value]);
+    allowSpawn && spawn('fast-gpio', ['set', this.pin, this.value]);
   }
 
   // Get the value (digital)
@@ -44,14 +45,15 @@ class Omega2GpioPin {
   getPromised() {
     let _this = this;
     return new Promise((resolve, reject) => {
-      spawn('fast-gpio', ['read', this.pin]).stdout.on('data', data => {
-        this.debugging && console.log('Pin ' + this.pin + ' read:  ' + this.value);
-        // Set value locally
-        _this.value = _this.parseRead(data.toString());
+      allowSpawn &&
+        spawn('fast-gpio', ['read', this.pin]).stdout.on('data', data => {
+          this.debugging && console.log('Pin ' + this.pin + ' read:  ' + this.value);
+          // Set value locally
+          _this.value = _this.parseRead(data.toString());
 
-        // Return resolve state
-        resolve(_this.value);
-      });
+          // Return resolve state
+          resolve(_this.value);
+        });
     });
   }
 
@@ -68,24 +70,57 @@ class Omega2GpioPin {
     this.duty = options.duty ? options.duty : 'duty';
 
     // Set value physically
-    spawn('fast-gpio', ['pwm', this.pin, this.frequency, this.duty]);
+    allowSpawn && spawn('fast-gpio', ['pwm', this.pin, this.frequency, this.duty]);
   }
 }
 
 class Omega2Gpio {
   // Test the system
   constructor() {
-    // - No fast-gpio (unlikely, for Omega2 at least)
-    spawn('fast-gpio').on('error', function() {
-      console.log(' Oops!\n You must first install fast-gpio');
-      process.exit();
-    });
+    this.fastGpioTested = false;
+
+    // These should be rewritten as individual promises
+
+    // - No fast-gpio (unlikely, on Omega2 at least, but more for local dev)
+    spawn('fast-gpio')
+      .on('exit', () => {
+        this.fastGpioTested = true;
+      })
+      .on('error', () => {
+        this.fastGpioTested = true;
+        allowSpawn = false;
+        console.log(' Oops!\n You must first install fast-gpio to give us control of the pins');
+      });
+
     // - Segmentation fault
-    spawn('fast-gpio', ['set-output', 11]).on('error', function() {
-      console.log(
-        ' Oops!\n Using an Omega2? You must update the firmware by spawnning:\n  oupgrade'
-      );
-      process.exit();
+    spawn('fast-gpio', ['set-output', 11])
+      .on('exit', () => {
+        this.fastGpioTested = true;
+      })
+      .on('error', () => {
+        this.fastGpioTested = true;
+        allowSpawn = false;
+        console.log(
+          ' Oops!\n Using an Omega2? You must update the firmware by spawnning:\n  oupgrade'
+        );
+      });
+  }
+
+  tests() {
+    // Polling isn't the best solution but will do okay for now
+    return new Promise((resolve, reject) => {
+      let count = 0,
+        testInterval = setInterval(() => {
+          console.log('thinking');
+          if (this.fastGpioTested) {
+            clearInterval(testInterval);
+            resolve();
+          }
+          if (count > 12) {
+            clearInterval(testInterval);
+            resolve();
+          }
+        }, 250);
     });
   }
 
