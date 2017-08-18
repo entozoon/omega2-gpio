@@ -69,6 +69,9 @@ class Omega2GpioPin {
     this.frequency = options.frequency ? options.frequency : 'frequency';
     this.duty = options.duty ? options.duty : 'duty';
 
+    this.debugging &&
+      console.log('Pin ' + this.pin + ' PWM: ' + this.frequency + 'hz @ ' + this.duty + '%');
+
     // Set value physically
     allowSpawn && spawn('fast-gpio', ['pwm', this.pin, this.frequency, this.duty]);
   }
