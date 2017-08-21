@@ -114,7 +114,6 @@ class Omega2Gpio {
     return new Promise((resolve, reject) => {
       let count = 0,
         testInterval = setInterval(() => {
-          console.log('thinking');
           if (this.fastGpioTested) {
             clearInterval(testInterval);
             resolve();
