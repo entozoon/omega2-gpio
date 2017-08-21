@@ -104,7 +104,7 @@ class Omega2Gpio {
         this.fastGpioTested = true;
         allowSpawn = false;
         console.log(
-          ' Oops!\n Using an Omega2? You must update the firmware by spawnning:\n  oupgrade'
+          ' Oops!\n Using an Omega2? You must update the firmware by running:\n   oupgrade'
         );
       });
   }
