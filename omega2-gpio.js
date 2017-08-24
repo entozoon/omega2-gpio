@@ -66,8 +66,8 @@ class Omega2GpioPin {
   pwm(options) {
     // Set value locally for the instance
     this.value = null;
-    this.frequency = options.frequency ? options.frequency : 'frequency';
-    this.duty = options.duty ? options.duty : 'duty';
+    this.frequency = options.frequency;
+    this.duty = options.duty;
 
     this.debugging &&
       console.log('Pin ' + this.pin + ' PWM: ' + this.frequency + 'hz @ ' + this.duty + '%');
